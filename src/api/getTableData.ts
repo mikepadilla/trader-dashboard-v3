@@ -1,7 +1,7 @@
 
 const url = 'https://script.google.com/macros/s/AKfycbxUh0f8wIouxgvOcGK3SyDy_Rcn3Bto0DZ2LblH0pkAWQvuxg8E0DypPoqRM6gHwNN8Dw/exec'
 const newsUrl = 'https://uxprototypes.org/ibkr/web-trader-dashboard/news-summary.php?ticker='
-const portfolioNewsUrl = 'https://uxprototypes.org/ibkr/web-trader-dashboard/news-summary-portfolio.php?tickers=nvda,msft,meta,amzn,googl,nflx,intc,adbe,aapl,tsla'
+const portfolioNewsUrl = 'http://s174627905.onlinehome.us/uxprototypes/ibkr/web-trader-dashboard/news-summary-portfolio.php?tickers=nvda,msft,meta,amzn,googl,nflx,intc,adbe,aapl,tsla'
 const newsArticlesUrl = 'https://api.tickertick.com/feed?q=z:aapl'
 export const getTableData = (dataName: string) => {
 	const response = fetch((url + "?sheets=" + encodeURIComponent(dataName))).then(res => (res.json())).then(data => {
