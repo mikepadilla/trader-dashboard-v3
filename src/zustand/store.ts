@@ -276,7 +276,7 @@ export const  useNewsStore = create(
 				set({summaryLoading: true})
 
 				try{
-					const res = await fetch("http://s174627905.onlinehome.us/uxprototypes/ibkr/web-trader-dashboard/news-summary.php?ticker=" + url)
+					const res = await fetch("https://deardollars.com/ibkr/news-summary.php?ticker=" + url)
 
 					if(!res.ok) throw new Error('Failed to fetch summary news! Try again');
 
@@ -289,7 +289,7 @@ export const  useNewsStore = create(
 				set({summaryLoading: true})
 
 				try{
-					const res = await fetch("http://s174627905.onlinehome.us/uxprototypes/ibkr/web-trader-dashboard/news-summary-portfolio.php?tickers=nvda,msft,meta,amzn,googl,nflx,intc,adbe,aapl,tsla")
+					const res = await fetch("https://deardollars.com/ibkr/news-summary-portfolio.php?tickers=nvda,msft,meta,amzn,googl,nflx,intc,adbe,aapl,tsla")
 
 					if(!res.ok) throw new Error('Failed to fetch summary news! Try again');
 
