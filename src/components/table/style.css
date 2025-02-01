@@ -35,6 +35,12 @@
 .table td{
 	font-family: var(--secondary-font);
 }
+.table td:nth-child(2){
+	width: 85px;
+  	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
+}
 
 .table td:first-child{
 	font-weight: 600;
