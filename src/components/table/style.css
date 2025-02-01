@@ -35,11 +35,15 @@
 .table td{
 	font-family: var(--secondary-font);
 }
-.table td:nth-child(2){
-	/* width: 85px;
+.trump__tab table td:nth-child(2){
+	width: 85px;
   	white-space: nowrap;
   	overflow: hidden;
-  	text-overflow: ellipsis;*/
+  	text-overflow: ellipsis;
+	text-align:left;
+}
+.trump__tab table th:nth-child(2){
+	text-align:left;
 }
 
 .table td:first-child{
