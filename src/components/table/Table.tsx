@@ -201,7 +201,7 @@ const Table = ({ tableData, tableId }) => {
               >
                 <span
                 style={{ paddingRight: sortConfig.key !== header ? "12.3px" : "3px" }}
-                >{header}</span><span style="font-size: 8px;"> {sortConfig.key === header ? (sortConfig.direction === "desc" ? "▲" : "▼") : ""}</span>
+                >{header}</span> {sortConfig.key === header ? (sortConfig.direction === "desc" ? "▲" : "▼") : ""}
               </th>
             ))}
         </tr>
