@@ -55,7 +55,7 @@
 }
 
 .articles__tab-title{
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 18px;
 	color: var(--text-second-color);
 }
@@ -65,7 +65,7 @@
 	flex-direction: column;
 	gap: 8px;
 	margin-top: 8px;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 18px;
 	color: var(--text-gray-color);
 }
