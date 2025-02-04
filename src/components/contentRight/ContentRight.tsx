@@ -65,7 +65,7 @@ const ContentRight = () => {
   return (
     <div className="content">
       <RightHeader />
-      <div className="" style={{ aspectRatio: "3/1", width: "100%" }}>
+      <div className="" style={{ aspectRatio: "1.9/1", width: "100%" }}>
         <ChartTab
           tabData={[
             {
