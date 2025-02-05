@@ -137,7 +137,7 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
 
   const options: NewChartOptionLine = {
     maintainAspectRatio: true,
-    aspectRatio: 2.7,
+    aspectRatio: 2.75,
     animation: false,
     layout: {
       padding: 0,
