@@ -124,6 +124,8 @@ const BarChart = ({ chartDataProp, yKey, events }) => {
   const [min, max] = findMinMax(chartData, yKey);
 
   const options: NewChartOptionBar = {
+    maintainAspectRatio: true,
+    aspectRatio: 3,     
     animation: false,
     maintainAspectRatio: false,
     layout: {
