@@ -125,7 +125,7 @@ const BarChart = ({ chartDataProp, yKey, events }) => {
 
   const options: NewChartOptionBar = {
     maintainAspectRatio: true,
-    aspectRatio: 2.8,     
+    aspectRatio: 2.7,     
     animation: false,
     layout: {
       padding: 0,
