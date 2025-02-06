@@ -98,30 +98,35 @@ const data = {
       pointBorderColor: "transparent",
       fill: true,
       backgroundColor: (context) => {
-        const chart = context.chart;
-        const ctx = chart.ctx;
-        const chartArea = chart.chartArea;
+  const chart = context.chart;
+  const ctx = chart.ctx;
+  const chartArea = chart.chartArea;
 
-        if (!chartArea) return null; // If chart is not ready, do nothing
+  if (!chartArea) {
+    // Defer rendering until chartArea is available
+    setTimeout(() => {
+      chart.update();
+    }, 100); // Small delay to allow chartArea to initialize
+    return "rgba(0, 0, 0, 0)"; // Temporary transparent background
+  }
 
-        const gradientFill = ctx.createLinearGradient(
-          0,
-          chartArea.top,
-          0,
-          chartArea.bottom
-        );
+  const { top, bottom } = chartArea;
+  const yAxis = chart.scales.y;
+  const zeroY = yAxis.getPixelForValue(0); // Get pixel position of y=0
 
-        const yAxis = chart.scales.y;
-        const zeroY = yAxis.getPixelForValue(0); // Get the pixel position of y=0
+  // Create gradient
+  const gradientFill = ctx.createLinearGradient(0, top, 0, bottom);
 
-        // Define gradient colors
-        gradientFill.addColorStop(0, "rgba(0, 200, 0, 0.3)"); // Green for positive values
-        gradientFill.addColorStop(zeroY / chartArea.bottom, "rgba(0, 200, 0, 0.3)");
-        gradientFill.addColorStop(zeroY / chartArea.bottom, "rgba(200, 0, 0, 0.3)");
-        gradientFill.addColorStop(1, "rgba(200, 0, 0, 0.3)"); // Red for negative values
+  // Green area above y=0
+  gradientFill.addColorStop(0, "rgba(0, 200, 0, 0.3)");
+  gradientFill.addColorStop(zeroY / bottom, "rgba(0, 200, 0, 0.3)");
 
-        return gradientFill;
-      },
+  // Red area below y=0
+  gradientFill.addColorStop(zeroY / bottom, "rgba(200, 0, 0, 0.3)");
+  gradientFill.addColorStop(1, "rgba(200, 0, 0, 0.3)");
+
+  return gradientFill;
+},
     },
   ],
 };
