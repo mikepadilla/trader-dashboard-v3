@@ -92,24 +92,7 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
               return { x: new Date(item['date']).getTime(), y: item[yKey] };
             }),
             borderWidth: 2,
-            borderColor: (ctx) => {
-        const { chart } = ctx;
-        const dataset = chart.data.datasets[0];
-        const dataPoints = dataset.data;
-
-        const borderColors = [];
-        for (let i = 0; i < dataPoints.length - 1; i++) {
-          const currentValue = dataPoints[i].y || dataPoints[i];
-          const nextValue = dataPoints[i + 1].y || dataPoints[i + 1];
-
-          // Red if negative, Green if positive
-          borderColors.push(currentValue > 0 ? "green" : "red");
-        }
-
-        // Repeat the last segment color to match the dataset length
-        borderColors.push(borderColors[borderColors.length - 1] || "green");
-        return borderColors;
-      },
+            borderColor: "#146EB0",
             pointRadius: pointEvents,
             pointHitRadius: pointEvents,
             pointBackgroundColor: pointColors,
