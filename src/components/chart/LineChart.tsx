@@ -99,23 +99,28 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
             pointBorderColor: "transparent",                                    
             fill: 'start',
             backgroundColor: (context) => {
-  const ctx = context.chart.ctx;
-  const chart = context.chart;
-  const { chartArea } = chart;
+  const { chart } = context;
+  const { ctx, chartArea } = chart;
 
+  // Ensure the chart area is defined
   if (!chartArea) {
-    return null; // Ensure the chart has been initialized
+    return "rgba(0, 0, 0, 0)"; // Transparent fallback
   }
 
-  const gradientAbove = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-  gradientAbove.addColorStop(0, "rgba(34, 197, 94, 0.5)");  // Green
-  gradientAbove.addColorStop(1, "rgba(34, 197, 94, 0)");    // Transparent
+  const { top, bottom } = chartArea;
 
-  const gradientBelow = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-  gradientBelow.addColorStop(0, "rgba(239, 68, 68, 0.5)");  // Red
-  gradientBelow.addColorStop(1, "rgba(239, 68, 68, 0)");    // Transparent
+  // Create a green gradient for positive values
+  const gradientAbove = ctx.createLinearGradient(0, top, 0, bottom);
+  gradientAbove.addColorStop(0, "rgba(34, 197, 94, 0.5)"); // Green at top
+  gradientAbove.addColorStop(1, "rgba(34, 197, 94, 0)");   // Fade out
 
-  return (context.raw.y >= 0) ? gradientAbove : gradientBelow;
+  // Create a red gradient for negative values
+  const gradientBelow = ctx.createLinearGradient(0, top, 0, bottom);
+  gradientBelow.addColorStop(0, "rgba(239, 68, 68, 0.5)"); // Red at top
+  gradientBelow.addColorStop(1, "rgba(239, 68, 68, 0)");   // Fade out
+
+  // Assign the correct gradient based on y-value
+  return context.raw.y >= 0 ? gradientAbove : gradientBelow;
 }
           },
         ]
