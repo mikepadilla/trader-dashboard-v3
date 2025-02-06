@@ -7,7 +7,7 @@ import {
   LineElement,
   PointElement,
   Title,
-  Tooltip
+  Tooltip,
 } from "chart.js";
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
@@ -17,7 +17,7 @@ import { useTableStore } from "../../zustand/store";
 import {
   backgroundTicks,
   hoverLine,
-  leaveEventPlugin
+  leaveEventPlugin,
 } from "./customChartPlugins";
 import "./style.css";
 
@@ -29,126 +29,84 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler      
+  Filler
 );
-
 
 const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   const [activeLineY, setActiveLineY] = useState(null);
   const [activeLineYVal, setActiveLineYVal] = useState(null);
-  const [pointColors, setPointColors] = useState<string[] | string>(['transparent'])
-  const [pointEvents, setPointEvents] = useState<number[] | number>([0])
   const chartRef = useRef();
-
-  const [chartData, setChartData] =
-    useState(chartDataProp);
+  const [chartData, setChartData] = useState(chartDataProp);
 
   useEffect(() => {
     setChartData(chartDataProp);
-  });
+  }, [chartDataProp]);
 
-  const tradingViewChart = useTableStore(store => store.tradingViewChart)
+  const tradingViewChart = useTableStore((store) => store.tradingViewChart);
 
+  // Function to split data into positive and negative datasets
+  const processData = (data) => {
+    const positiveDataset = [];
+    const negativeDataset = [];
 
-  useEffect(() => {
-    if(events) {
-      const colorsArr = []
-      const eventsArr = []
-      chartDataProp.forEach(item => {
-        if(item && item['trade'] != undefined){
-          if(item['trade'] == 'Buy'){
-            colorsArr.push('green')
-          } else if(item['trade'] == 'Sell') {
-            colorsArr.push('red')
-          }
-          eventsArr.push(3)
-        } else if(item && item['daily buy sell']){
-          if(item['daily buy sell'] > 0){
-            colorsArr.push('green')
-          } else if(item['daily buy sell'] < 0) {
-            colorsArr.push('red')
-          }
-          eventsArr.push(3)
-        } else {
-          colorsArr.push('transparent')
-          eventsArr.push(0)
-        }
-      })
-      setPointColors(colorsArr)
-      setPointEvents(eventsArr)
-    } else {
-      setPointColors('transparent')
-    }
-  }, [chartDataProp])
+    data.forEach((item) => {
+      const value = item[yKey];
+      if (value >= 0) {
+        positiveDataset.push({ x: new Date(item.date).getTime(), y: value });
+        negativeDataset.push(null); // Align with positive data
+      } else {
+        positiveDataset.push(null); // Align with negative data
+        negativeDataset.push({ x: new Date(item.date).getTime(), y: value });
+      }
+    });
 
-
-  const data = {
-
-        labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь"],
-        datasets: [
-          {
-            label: "Продажи в 2024 году",
-            data: chartData.map((item) => {
-              return { x: new Date(item['date']).getTime(), y: item[yKey] };
-            }),
-            borderWidth: 2,
-            borderColor: "#146EB0",
-            pointRadius: pointEvents,
-            pointHitRadius: pointEvents,
-            pointBackgroundColor: pointColors,
-            pointBorderColor: "transparent",                                    
-            fill: 'start',
-backgroundColor: (context) => {
-  const { chart } = context;
-
-  if (!chart.chartArea) {
-    // Defer the update and re-render when chartArea is ready
-    setTimeout(() => {
-      chart.update();
-    }, 50);
-    return "transparent"; // Return a default color while waiting
-  }
-
-  const { ctx, chartArea: { top, bottom } } = chart;
-
-  const gradient = ctx.createLinearGradient(0, top, 0, bottom);
-
-  context.dataset.data.forEach((point, index) => {
-    const y = point.y;
-    const ratio = index / (context.dataset.data.length - 1); 
-
-    if (y >= 0) {
-      gradient.addColorStop(ratio, "rgba(0, 255, 0, 0.3)"); // Green for positive values
-    } else {
-      gradient.addColorStop(ratio, "rgba(255, 0, 0, 0.3)"); // Red for negative values
-    }
-  });
-
-  return gradient;
-}
-          },
-        ]
-      
-    
+    return { positiveDataset, negativeDataset };
   };
 
-  const findMinMaxDay = (data): [number, number] => {  
-   if(data[0]) {
-    let min: number = new Date(data[0]['date']).getTime();
-    let max: number = new Date(data[0]['date']).getTime();
+  const { positiveDataset, negativeDataset } = processData(chartData);
 
-    for (let i = 0; i < data.length; i++) {
-      if (max < new Date(data[i]['date']).getTime()) {
-        max = new Date(data[i]['date']).getTime();
+  const data = {
+    labels: chartData.map((item) =>
+      new Date(item["date"]).toLocaleDateString("en-GB", {
+        month: "short",
+        year: "numeric",
+      })
+    ),
+    datasets: [
+      {
+        label: "Positive Values",
+        data: positiveDataset,
+        borderColor: "transparent",
+        backgroundColor: "rgba(0, 255, 0, 0.5)", // Green for positive areas
+        fill: true,
+      },
+      {
+        label: "Negative Values",
+        data: negativeDataset,
+        borderColor: "transparent",
+        backgroundColor: "rgba(255, 0, 0, 0.5)", // Red for negative areas
+        fill: true,
+      },
+    ],
+  };
+
+  const findMinMaxDay = (data) => {
+    if (data[0]) {
+      let min = new Date(data[0]["date"]).getTime();
+      let max = new Date(data[0]["date"]).getTime();
+
+      for (let i = 0; i < data.length; i++) {
+        if (max < new Date(data[i]["date"]).getTime()) {
+          max = new Date(data[i]["date"]).getTime();
+        }
+        if (min > new Date(data[i]["date"]).getTime()) {
+          min = new Date(data[i]["date"]).getTime();
+        }
       }
-      if (min > new Date(data[i]['date']).getTime()) {
-        min = new Date(data[i]['date']).getTime();
-      }
+      return [min, max];
     }
-    return [min, max]
-   }
-   return [0, 0]
-  }
+    return [0, 0];
+  };
 
   const options: NewChartOptionLine = {
     maintainAspectRatio: true,
@@ -163,13 +121,12 @@ backgroundColor: (context) => {
         display: false,
       },
 
-      
       tooltip: {
         enabled: events ? true : false,
         yAlign: "bottom",
         callbacks: {
           title: (tooltipData) => {
-            if(chartData[tooltipData[0].dataIndex]["ticker"]){
+            if (chartData[tooltipData[0].dataIndex]["ticker"]) {
               return `${chartData[tooltipData[0].dataIndex][
                 "ticker"
               ].toUpperCase()} $${chartData[tooltipData[0].dataIndex][
@@ -180,23 +137,28 @@ backgroundColor: (context) => {
                 yKey
               ].toLocaleString("en-US")}`;
             }
-            
-
           },
           label: (tooltipData) => {
-            if(chartData[tooltipData.dataIndex]["cost basis"]) {
-              return `${chartData[tooltipData.dataIndex]["shares"].toLocaleString('en-US')} Shares $${
-                chartData[tooltipData.dataIndex]["cost basis"].toLocaleString('en-US')
+            if (chartData[tooltipData.dataIndex]["cost basis"]) {
+              return `${chartData[tooltipData.dataIndex][
+                "shares"
+              ].toLocaleString("en-US")} Shares $${
+                chartData[tooltipData.dataIndex]["cost basis"].toLocaleString(
+                  "en-US"
+                )
               }`;
             } else {
               return `${chartData[tooltipData.dataIndex]["shares"]} Shares $${
-                chartData[tooltipData.dataIndex]["price"].toLocaleString('en-US')
+                chartData[tooltipData.dataIndex]["price"].toLocaleString(
+                  "en-US"
+                )
               }`;
             }
-
           },
           footer: (tooltipData) => {
-            const date = new Date(chartData[tooltipData[0].dataIndex]["date"]);
+            const date = new Date(
+              chartData[tooltipData[0].dataIndex]["date"]
+            );
             const month = date.getUTCMonth();
             const day = date.getUTCDate();
             const year = date.getUTCFullYear();
@@ -246,15 +208,15 @@ backgroundColor: (context) => {
         },
 
         ticks: {
-          color: "#146EB0",align: 'inner',
+          color: "#146EB0",
+          align: "inner",
           count: 11,
           callback: (val) => {
-            return new Date(val).toLocaleDateString('en-GB', {
-                
-                month: "short",
-                year: "numeric"
+            return new Date(val).toLocaleDateString("en-GB", {
+              month: "short",
+              year: "numeric",
             });
-          }
+          },
         },
       },
       y: {
@@ -263,37 +225,34 @@ backgroundColor: (context) => {
         grid: {
           color: "#1F4C69",
           tickLength: 0,
-          
         },
         position: "right",
         type: "linear",
         border: {
-         dash:  (context) => {
-          return context.tick.value === min - max / 100 ? [] : [3]; // Линия на y=50 сплошная, остальные пунктирные
-        },
+          dash: (context) => {
+            return context.tick.value === min - max / 100 ? [] : [3];
+          },
           display: false,
         },
-        
+
         ticks: {
           color: "#146EB0",
           callback: (value: number) => {
-            return Math.floor(value).toLocaleString('en-US');
+            return Math.floor(value).toLocaleString("en-US");
           },
           font: {
             size: 12,
             family: "Proxima nova, sans-serif",
           },
           padding: 10,
-          count: 8
+          count: 8,
         },
       },
     },
   };
 
-  const plugins = [hoverLine(), backgroundTicks(), leaveEventPlugin() ];
+  const plugins = [hoverLine(), backgroundTicks(), leaveEventPlugin()];
 
-
- 
   return (
     <Line
       className="chart"
@@ -305,6 +264,4 @@ backgroundColor: (context) => {
   );
 };
 
-
 export default LineChart;
-// JavaScript Document
