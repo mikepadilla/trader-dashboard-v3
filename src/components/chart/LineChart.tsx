@@ -279,11 +279,11 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   hoverLine(),
   backgroundTicks(),
   leaveEventPlugin(),
-  {
+ {
   id: "backgroundPlugin",
   beforeDatasetsDraw(chart) {
     const { ctx, chartArea, scales } = chart;
-    const { top, bottom, left, right } = chartArea;
+    const { top, bottom } = chartArea; // Only use necessary variables
     const yScale = scales.y;
     const xScale = scales.x;
 
@@ -309,14 +309,11 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
       ctx.moveTo(currentX, currentY);
       ctx.lineTo(nextX, nextY);
 
-      // Constrain fill to the y=0 line
       if (currentValue > 0) {
-        // Fill below the line for positive values
         ctx.lineTo(nextX, yZero);
         ctx.lineTo(currentX, yZero);
         ctx.fillStyle = "rgba(0, 200, 0, 0.2)";
       } else {
-        // Fill above the line for negative values
         ctx.lineTo(nextX, yZero);
         ctx.lineTo(currentX, yZero);
         ctx.fillStyle = "rgba(200, 0, 0, 0.2)";
@@ -328,7 +325,7 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
 
     ctx.restore();
   },
-},
+}
 ];
 
 
