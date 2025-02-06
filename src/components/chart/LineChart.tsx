@@ -282,8 +282,8 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   {
   id: "backgroundPlugin",
   beforeDatasetsDraw(chart) {
-    const { ctx, chartArea, scales, data } = chart;
-    const { top, bottom, left, right } = chartArea;
+    const { ctx, chartArea, scales } = chart;
+const { top, bottom } = chartArea;
     const yScale = scales.y;
     const xScale = scales.x;
 
