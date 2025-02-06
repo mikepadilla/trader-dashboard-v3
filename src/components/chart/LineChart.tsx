@@ -82,51 +82,49 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   }, [chartDataProp])
 
 
-  const data = {
+const data = {
+  labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь"],
+  datasets: [
+    {
+      label: "Продажи в 2024 году",
+      data: chartData.map((item) => {
+        return { x: new Date(item["date"]).getTime(), y: item[yKey] };
+      }),
+      borderWidth: 2,
+      borderColor: "#146EB0",
+      pointRadius: pointEvents,
+      pointHitRadius: pointEvents,
+      pointBackgroundColor: pointColors,
+      pointBorderColor: "transparent",
+      fill: true,
+      backgroundColor: (context) => {
+        const chart = context.chart;
+        const ctx = chart.ctx;
+        const chartArea = chart.chartArea;
 
-        labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь"],
-        datasets: [
-          {
-            label: "Продажи в 2024 году",
-            data: chartData.map((item) => {
-              return { x: new Date(item['date']).getTime(), y: item[yKey] };
-            }),
-            borderWidth: 2,
-            borderColor: "#146EB0",
-            pointRadius: pointEvents,
-            pointHitRadius: pointEvents,
-            pointBackgroundColor: pointColors,
-            pointBorderColor: "transparent",                                    
-            fill: 'start',
-            backgroundColor: (context) => {
-  const { chart } = context;
-  const { ctx, chartArea } = chart;
+        if (!chartArea) return null; // If chart is not ready, do nothing
 
-  // Ensure the chart area is defined
-  if (!chartArea) {
-    return "rgba(0, 0, 0, 0)"; // Transparent fallback
-  }
+        const gradientFill = ctx.createLinearGradient(
+          0,
+          chartArea.top,
+          0,
+          chartArea.bottom
+        );
 
-  const { top, bottom } = chartArea;
+        const yAxis = chart.scales.y;
+        const zeroY = yAxis.getPixelForValue(0); // Get the pixel position of y=0
 
-  // Create a green gradient for positive values
-  const gradientAbove = ctx.createLinearGradient(0, top, 0, bottom);
-  gradientAbove.addColorStop(0, "rgba(34, 197, 94, 0.5)"); // Green at top
-  gradientAbove.addColorStop(1, "rgba(34, 197, 94, 0)");   // Fade out
+        // Define gradient colors
+        gradientFill.addColorStop(0, "rgba(0, 200, 0, 0.3)"); // Green for positive values
+        gradientFill.addColorStop(zeroY / chartArea.bottom, "rgba(0, 200, 0, 0.3)");
+        gradientFill.addColorStop(zeroY / chartArea.bottom, "rgba(200, 0, 0, 0.3)");
+        gradientFill.addColorStop(1, "rgba(200, 0, 0, 0.3)"); // Red for negative values
 
-  // Create a red gradient for negative values
-  const gradientBelow = ctx.createLinearGradient(0, top, 0, bottom);
-  gradientBelow.addColorStop(0, "rgba(239, 68, 68, 0.5)"); // Red at top
-  gradientBelow.addColorStop(1, "rgba(239, 68, 68, 0)");   // Fade out
-
-  // Assign the correct gradient based on y-value
-  return context.raw.y >= 0 ? gradientAbove : gradientBelow;
-}
-          },
-        ]
-      
-    
-  };
+        return gradientFill;
+      },
+    },
+  ],
+};
 
   const findMinMaxDay = (data): [number, number] => {  
    if(data[0]) {
