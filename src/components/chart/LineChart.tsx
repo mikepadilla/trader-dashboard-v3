@@ -99,18 +99,27 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
             pointBorderColor: "transparent",                                    
             fill: 'start',
             backgroundColor: (context) => {
-              const ctx = context.chart.ctx
-              const gradientFill = ctx.createLinearGradient(
-                0,
-                0,
-                0,
-                ctx.canvas.height / 1.5
-              );
-              gradientFill.addColorStop(0, "#5998F533");
-              gradientFill.addColorStop(1, "#ffffff00");
+  const ctx = context.chart.ctx;
+  const chart = context.chart;
+  const { data } = chart.data.datasets[0];
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
   
-              return gradientFill;
-            }
+  const index = context.dataIndex;
+  const yValue = data[index].y;
+
+  if (yValue >= 0) {
+    // Positive Values: Green Gradient
+    gradient.addColorStop(0, "rgba(0, 255, 0, 0.5)"); // Bright Green
+    gradient.addColorStop(1, "rgba(0, 255, 0, 0.1)"); // Faded Green
+  } else {
+    // Negative Values: Red Gradient
+    gradient.addColorStop(0, "rgba(255, 0, 0, 0.5)"); // Bright Red
+    gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)"); // Faded Red
+  }
+
+  return gradient;
+}
           },
         ]
       
