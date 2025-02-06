@@ -101,33 +101,21 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
             backgroundColor: (context) => {
   const ctx = context.chart.ctx;
   const chart = context.chart;
-  const dataset = chart.data.datasets[0];
-  const data = dataset?.data || [];
+  const { chartArea } = chart;
 
-  const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-
-  // Ensure dataIndex is valid
-  const index = context.dataIndex;
-  if (index === undefined || !data[index]) {
-    // Return default gradient to avoid crashing
-    gradient.addColorStop(0, "rgba(89, 152, 245, 0.2)"); // Default Blue
-    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
-    return gradient;
+  if (!chartArea) {
+    return null; // Ensure the chart has been initialized
   }
 
-  const yValue = data[index].y;
+  const gradientAbove = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+  gradientAbove.addColorStop(0, "rgba(34, 197, 94, 0.5)");  // Green
+  gradientAbove.addColorStop(1, "rgba(34, 197, 94, 0)");    // Transparent
 
-  if (yValue >= 0) {
-    // Positive Values: Green Gradient
-    gradient.addColorStop(0, "rgba(0, 255, 0, 0.5)"); // Bright Green
-    gradient.addColorStop(1, "rgba(0, 255, 0, 0.1)"); // Faded Green
-  } else {
-    // Negative Values: Red Gradient
-    gradient.addColorStop(0, "rgba(255, 0, 0, 0.5)"); // Bright Red
-    gradient.addColorStop(1, "rgba(255, 0, 0, 0.1)"); // Faded Red
-  }
+  const gradientBelow = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+  gradientBelow.addColorStop(0, "rgba(239, 68, 68, 0.5)");  // Red
+  gradientBelow.addColorStop(1, "rgba(239, 68, 68, 0)");    // Transparent
 
-  return gradient;
+  return (context.raw.y >= 0) ? gradientAbove : gradientBelow;
 }
           },
         ]
