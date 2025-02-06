@@ -280,25 +280,45 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   backgroundTicks(),
   leaveEventPlugin(),
   {
-    id: "backgroundPlugin",
-    beforeDraw(chart) {
-      const { ctx, chartArea, scales } = chart;
-      const { top, bottom, left, right } = chartArea;
-      const yZero = scales.y.getPixelForValue(0); // Pixel position for y=0
+  id: "backgroundPlugin",
+  beforeDatasetsDraw(chart) {
+    const { ctx, chartArea, scales, data } = chart;
+    const { top, bottom, left, right } = chartArea;
+    const yScale = scales.y;
+    const xScale = scales.x;
 
-      ctx.save();
+    const dataset = chart.data.datasets[0]; // Assuming single dataset for simplicity
+    const dataPoints = dataset.data;
 
-      // Fill green for positive values (above x-axis)
-      ctx.fillStyle = "rgba(0, 200, 0, 0.2)";
-      ctx.fillRect(left, top, right - left, yZero - top);
+    ctx.save();
 
-      // Fill red for negative values (below x-axis)
-      ctx.fillStyle = "rgba(200, 0, 0, 0.2)";
-      ctx.fillRect(left, yZero, right - left, bottom - yZero);
+    // Iterate through data points to fill green or red dynamically
+    for (let i = 0; i < dataPoints.length - 1; i++) {
+      const currentValue = dataPoints[i].y || dataPoints[i];
+      const nextValue = dataPoints[i + 1].y || dataPoints[i + 1];
 
-      ctx.restore();
-    },
+      const currentX = xScale.getPixelForValue(dataPoints[i].x || i);
+      const nextX = xScale.getPixelForValue(dataPoints[i + 1].x || i + 1);
+
+      const currentY = yScale.getPixelForValue(currentValue);
+      const nextY = yScale.getPixelForValue(nextValue);
+
+      // Create a path for the area under/above the line
+      ctx.beginPath();
+      ctx.moveTo(currentX, currentY);
+      ctx.lineTo(nextX, nextY);
+      ctx.lineTo(nextX, nextValue > 0 ? bottom : top);
+      ctx.lineTo(currentX, currentValue > 0 ? bottom : top);
+      ctx.closePath();
+
+      // Fill green if positive, red if negative
+      ctx.fillStyle = currentValue > 0 ? "rgba(0, 200, 0, 0.2)" : "rgba(200, 0, 0, 0.2)";
+      ctx.fill();
+    }
+
+    ctx.restore();
   },
+},
 ];
 
 
