@@ -106,7 +106,7 @@ const data = {
       backgroundColor: "rgba(255, 0, 0, 0.5)", // Red background
     },
   ],
-};
+}
 
   const findMinMaxDay = (data): [number, number] => {  
    if(data[0]) {
