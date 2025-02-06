@@ -1,3 +1,36 @@
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip
+} from "chart.js";
+import { useEffect, useRef, useState } from "react";
+import { Line } from "react-chartjs-2";
+
+import { NewChartOptionLine } from "../../types/types";
+import { useTableStore } from "../../zustand/store";
+import {
+  backgroundTicks,
+  hoverLine,
+  leaveEventPlugin
+} from "./customChartPlugins";
+import "./style.css";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler      
+);
 const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   const [activeLineY, setActiveLineY] = useState(null);
   const [activeLineYVal, setActiveLineYVal] = useState(null);
