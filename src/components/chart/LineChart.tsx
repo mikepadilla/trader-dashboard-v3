@@ -82,31 +82,28 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   }, [chartDataProp])
 
 
- const data = {
-  labels: chartData.map((item) => new Date(item['date']).toLocaleDateString()),
+const data = {
+  labels: chartData.map((item) => new Date(item['date']).toLocaleDateString()), // X-axis labels
   datasets: [
-    // Dataset for Positive Values
     {
       label: "Positive Values",
-      data: chartData.map((item) => (item[yKey] >= 0 ? item[yKey] : null)),
-      borderColor: "green",
-      backgroundColor: "rgba(0, 255, 0, 0.2)", // Light green fill
-            pointRadius: pointEvents,
-            pointHitRadius: pointEvents,
-            pointBackgroundColor: pointColors,
+      data: chartData.map((item) => (item[yKey] >= 0 ? item[yKey] : null)), // Positive values
+      borderWidth: 2,
+      borderColor: "#146EB0",
+      pointRadius: 0,
+      pointHitRadius: 0,
       fill: true,
+      backgroundColor: "rgba(0, 128, 0, 0.5)", // Green background
     },
-    // Dataset for Negative Values
     {
       label: "Negative Values",
-      data: chartData.map((item) => (item[yKey] < 0 ? item[yKey] : null)),
-      borderColor: "red",
-      backgroundColor: "rgba(255, 0, 0, 0.2)", // Light red fill
+      data: chartData.map((item) => (item[yKey] < 0 ? item[yKey] : null)), // Negative values
       borderWidth: 2,
-      pointRadius: pointEvents,
-            pointHitRadius: pointEvents,
-            pointBackgroundColor: pointColors,
+      borderColor: "#146EB0",
+      pointRadius: 0,
+      pointHitRadius: 0,
       fill: true,
+      backgroundColor: "rgba(255, 0, 0, 0.5)", // Red background
     },
   ],
 };
