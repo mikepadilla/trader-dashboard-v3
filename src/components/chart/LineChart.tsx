@@ -283,16 +283,18 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   id: "backgroundPlugin",
   beforeDatasetsDraw(chart) {
     const { ctx, chartArea, scales } = chart;
-const { top, bottom } = chartArea;
+    const { top, bottom, left, right } = chartArea;
     const yScale = scales.y;
     const xScale = scales.x;
 
-    const dataset = chart.data.datasets[0]; // Assuming single dataset for simplicity
+    const dataset = chart.data.datasets[0]; // Assuming a single dataset
     const dataPoints = dataset.data;
 
     ctx.save();
 
-    // Iterate through data points to fill green or red dynamically
+    // Get pixel position for y=0
+    const yZero = yScale.getPixelForValue(0);
+
     for (let i = 0; i < dataPoints.length - 1; i++) {
       const currentValue = dataPoints[i].y || dataPoints[i];
       const nextValue = dataPoints[i + 1].y || dataPoints[i + 1];
@@ -303,16 +305,24 @@ const { top, bottom } = chartArea;
       const currentY = yScale.getPixelForValue(currentValue);
       const nextY = yScale.getPixelForValue(nextValue);
 
-      // Create a path for the area under/above the line
       ctx.beginPath();
       ctx.moveTo(currentX, currentY);
       ctx.lineTo(nextX, nextY);
-      ctx.lineTo(nextX, nextValue > 0 ? bottom : top);
-      ctx.lineTo(currentX, currentValue > 0 ? bottom : top);
-      ctx.closePath();
 
-      // Fill green if positive, red if negative
-      ctx.fillStyle = currentValue > 0 ? "rgba(0, 200, 0, 0.2)" : "rgba(200, 0, 0, 0.2)";
+      // Constrain fill to the y=0 line
+      if (currentValue > 0) {
+        // Fill below the line for positive values
+        ctx.lineTo(nextX, yZero);
+        ctx.lineTo(currentX, yZero);
+        ctx.fillStyle = "rgba(0, 200, 0, 0.2)";
+      } else {
+        // Fill above the line for negative values
+        ctx.lineTo(nextX, yZero);
+        ctx.lineTo(currentX, yZero);
+        ctx.fillStyle = "rgba(200, 0, 0, 0.2)";
+      }
+
+      ctx.closePath();
       ctx.fill();
     }
 
