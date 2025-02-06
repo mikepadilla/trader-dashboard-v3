@@ -88,7 +88,7 @@ const data = {
     {
       label: "Продажи в 2024 году",
       data: chartData.map((item) => {
-        return { x: new Date(item["date"]).getTime(), y: item[yKey] };
+        return { x: new Date(item['date']).getTime(), y: item[yKey] };
       }),
       borderWidth: 2,
       borderColor: "#146EB0",
@@ -96,37 +96,26 @@ const data = {
       pointHitRadius: pointEvents,
       pointBackgroundColor: pointColors,
       pointBorderColor: "transparent",
-      fill: true,
+      fill: "start",
       backgroundColor: (context) => {
-  const chart = context.chart;
-  const ctx = chart.ctx;
-  const chartArea = chart.chartArea;
+        const { chart, dataset, dataIndex } = context;
+        const ctx = chart.ctx;
+        const yAxis = chart.scales.y;
+        const yValue = dataset.data[dataIndex].y;
+        
+        const yZero = yAxis.getPixelForValue(0);
+        const gradientFill = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+        
+        if (yValue >= 0) {
+          gradientFill.addColorStop(0, "rgba(0, 255, 0, 0.3)");
+          gradientFill.addColorStop(1, "rgba(0, 255, 0, 0)");
+        } else {
+          gradientFill.addColorStop(0, "rgba(255, 0, 0, 0.3)");
+          gradientFill.addColorStop(1, "rgba(255, 0, 0, 0)");
+        }
 
-  if (!chartArea) {
-    // Defer rendering until chartArea is available
-    setTimeout(() => {
-      chart.update();
-    }, 100); // Small delay to allow chartArea to initialize
-    return "rgba(0, 0, 0, 0)"; // Temporary transparent background
-  }
-
-  const { top, bottom } = chartArea;
-  const yAxis = chart.scales.y;
-  const zeroY = yAxis.getPixelForValue(0); // Get pixel position of y=0
-
-  // Create gradient
-  const gradientFill = ctx.createLinearGradient(0, top, 0, bottom);
-
-  // Green area above y=0
-  gradientFill.addColorStop(0, "rgba(0, 200, 0, 0.3)");
-  gradientFill.addColorStop(zeroY / bottom, "rgba(0, 200, 0, 0.3)");
-
-  // Red area below y=0
-  gradientFill.addColorStop(zeroY / bottom, "rgba(200, 0, 0, 0.3)");
-  gradientFill.addColorStop(1, "rgba(200, 0, 0, 0.3)");
-
-  return gradientFill;
-},
+        return gradientFill;
+      },
     },
   ],
 };
