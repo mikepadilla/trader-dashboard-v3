@@ -91,7 +91,9 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
       data: chartData.map((item) => (item[yKey] >= 0 ? item[yKey] : null)),
       borderColor: "green",
       backgroundColor: "rgba(0, 255, 0, 0.2)", // Light green fill
-      borderWidth: 2,
+            pointRadius: pointEvents,
+            pointHitRadius: pointEvents,
+            pointBackgroundColor: pointColors,
       fill: true,
     },
     // Dataset for Negative Values
@@ -101,6 +103,9 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
       borderColor: "red",
       backgroundColor: "rgba(255, 0, 0, 0.2)", // Light red fill
       borderWidth: 2,
+      pointRadius: pointEvents,
+            pointHitRadius: pointEvents,
+            pointBackgroundColor: pointColors,
       fill: true,
     },
   ],
