@@ -101,11 +101,20 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
             backgroundColor: (context) => {
   const ctx = context.chart.ctx;
   const chart = context.chart;
-  const { data } = chart.data.datasets[0];
+  const dataset = chart.data.datasets[0];
+  const data = dataset?.data || [];
 
   const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-  
+
+  // Ensure dataIndex is valid
   const index = context.dataIndex;
+  if (index === undefined || !data[index]) {
+    // Return default gradient to avoid crashing
+    gradient.addColorStop(0, "rgba(89, 152, 245, 0.2)"); // Default Blue
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    return gradient;
+  }
+
   const yValue = data[index].y;
 
   if (yValue >= 0) {
