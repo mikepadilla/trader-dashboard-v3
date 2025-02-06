@@ -82,43 +82,55 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
   }, [chartDataProp])
 
 
-const data = {
-  labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь"],
-  datasets: [
-    {
-      label: "Продажи в 2024 году",
-      data: chartData.map((item) => {
-        return { x: new Date(item['date']).getTime(), y: item[yKey] };
-      }),
-      borderWidth: 2,
-      borderColor: "#146EB0",
-      pointRadius: pointEvents,
-      pointHitRadius: pointEvents,
-      pointBackgroundColor: pointColors,
-      pointBorderColor: "transparent",
-      fill: "start",
-      backgroundColor: (context) => {
-        const { chart, dataset, dataIndex } = context;
-        const ctx = chart.ctx;
-        const yAxis = chart.scales.y;
-        const yValue = dataset.data[dataIndex].y;
-        
-        const yZero = yAxis.getPixelForValue(0);
-        const gradientFill = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-        
-        if (yValue >= 0) {
-          gradientFill.addColorStop(0, "rgba(0, 255, 0, 0.3)");
-          gradientFill.addColorStop(1, "rgba(0, 255, 0, 0)");
-        } else {
-          gradientFill.addColorStop(0, "rgba(255, 0, 0, 0.3)");
-          gradientFill.addColorStop(1, "rgba(255, 0, 0, 0)");
-        }
+  const data = {
 
-        return gradientFill;
-      },
-    },
-  ],
-};
+        labels: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь"],
+        datasets: [
+          {
+            label: "Продажи в 2024 году",
+            data: chartData.map((item) => {
+              return { x: new Date(item['date']).getTime(), y: item[yKey] };
+            }),
+            borderWidth: 2,
+            borderColor: "#146EB0",
+            pointRadius: pointEvents,
+            pointHitRadius: pointEvents,
+            pointBackgroundColor: pointColors,
+            pointBorderColor: "transparent",                                    
+            fill: 'start',
+backgroundColor: (context) => {
+  const { chart } = context;
+
+  if (!chart.chartArea) {
+    // Defer the update and re-render when chartArea is ready
+    setTimeout(() => {
+      chart.update();
+    }, 50);
+    return "transparent"; // Return a default color while waiting
+  }
+
+  const { ctx, chartArea: { top, bottom } } = chart;
+
+  const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+
+  context.dataset.data.forEach((point, index) => {
+    const y = point.y;
+    const ratio = index / (context.dataset.data.length - 1); 
+
+    if (y >= 0) {
+      gradient.addColorStop(ratio, "rgba(0, 255, 0, 0.3)"); // Green for positive values
+    } else {
+      gradient.addColorStop(ratio, "rgba(255, 0, 0, 0.3)"); // Red for negative values
+    }
+  });
+
+  return gradient;
+}
+          },
+        ]
+      
+    
+  };
 
   const findMinMaxDay = (data): [number, number] => {  
    if(data[0]) {
