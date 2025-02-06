@@ -282,8 +282,7 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
  {
   id: "backgroundPlugin",
   beforeDatasetsDraw(chart) {
-    const { ctx, chartArea, scales } = chart;
-    const { top, bottom } = chartArea; // Only use necessary variables
+    const { ctx, scales } = chart; // Only keep what is used
     const yScale = scales.y;
     const xScale = scales.x;
 
@@ -309,6 +308,7 @@ const LineChart = ({ min, max, chartDataProp, yKey, events }) => {
       ctx.moveTo(currentX, currentY);
       ctx.lineTo(nextX, nextY);
 
+      // Constrain fill to the y=0 line
       if (currentValue > 0) {
         ctx.lineTo(nextX, yZero);
         ctx.lineTo(currentX, yZero);
